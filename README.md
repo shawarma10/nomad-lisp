@@ -17,10 +17,6 @@ You can also find some example programs [here](https://github.com/Moritisimor/no
 ## Other implementations
 Check out the other implementations!
 
-The nomad implementation in go, designed for embedding within go applications:
-
-[gomad](https://github.com/Moritisimor/gomad)
-
 The nomad implementation in rust by [RobertFlexx](https://github.com/RobertFlexx):
 
 [romad](https://github.com/RobertFlexx/romad)
