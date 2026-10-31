@@ -18,7 +18,7 @@ let () =
     print_endline "You can also pass a file to be run as a script.";
     print_endline "\tExample: nomad my_script.nomad\n";
     print_endline "For More information, visit:";
-    print_endline "https://github.com/Moritisimor/nomad-lisp";
+    print_endline "https://github.com/shawarma10/nomad-lisp";
   )
 
   | [_; "-e"; expr] | [_; "--eval"; expr] -> (

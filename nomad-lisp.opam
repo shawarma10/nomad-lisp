@@ -3,13 +3,13 @@ opam-version: "2.0"
 synopsis: "Modern, readable LISP Dialect. Interpreter written in OCaml."
 description:
   "Modern, readable, dynamically typed, interpreted LISP dialect written in OCaml."
-maintainer: ["Moritisimor <devMoritisimor@proton.me>"]
-authors: ["Moritisimor <devMoritisimor@proton.me>"]
+maintainer: ["shawarma10 <shawarma10@proton.me>"]
+authors: ["shawarma10 <shawarma10@proton.me>"]
 license: "MIT"
 tags: ["interpreter" "lisp"]
-homepage: "https://github.com/Moritisimor/nomad-lisp"
-doc: "https://github.com/Moritisimor/nomad-lisp"
-bug-reports: "https://github.com/Moritisimor/nomad-lisp/issues"
+homepage: "https://github.com/shawarma10/nomad-lisp"
+doc: "https://github.com/shawarma10/nomad-lisp"
+bug-reports: "https://github.com/shawarma10/nomad-lisp/issues"
 depends: [
   "dune" {>= "3.24"}
   "ocaml"
@@ -30,5 +30,5 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/Moritisimor/nomad-lisp.git"
+dev-repo: "git+https://github.com/shawarma10/nomad-lisp.git"
 x-maintenance-intent: ["(latest)"]

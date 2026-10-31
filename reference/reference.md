@@ -28,50 +28,40 @@ What's important about nomad callbacks is that they receive syntax/S-Expressions
 
 This is important because if nomad callbacks were to evaluate their functions eagerly, constructs like `if` would not be possible.
 
-You can find documentation about concrete prelude implementations [here](https://github.com/Moritisimor/nomad-lisp/tree/main/docs).
+You can find documentation about concrete prelude implementations [here](https://github.com/shawarma10/nomad-lisp/tree/main/docs).
 
 ### About the embedding API
 As was mentioned in the prelude section, nomad callbacks must receive S-Expressions.
 
-An example of how such an API may look like (gomad implementation):
-```go
-package main
+An example of how such an API may look like ([romad](https://github.com/RobertFlexx/romad), the Rust implementation):
+```rust
+use romad::natives_util::get_string;
+use romad::{Interpreter, NomadError, Value};
 
-import (
-	"fmt"
-	"log"
+fn main() -> Result<(), NomadError> {
+    let interp = Interpreter::new(); // Create a new interpreter
+    interp.register_native("log", |args, env| {
+        // Check argument length
+        if args.len() != 1 {
+            return Err(NomadError::eval(format!(
+                "Error in call to log: Expected one argument, got {}",
+                args.len()
+            )));
+        }
 
-	"github.com/Moritisimor/gomad/expr"
-	"github.com/Moritisimor/gomad/interpreter"
-	"github.com/Moritisimor/gomad/value"
-	"github.com/Moritisimor/gomad/eval"
-)
+        // We expect a string as the argument, anything else is an error.
+        let log_string = get_string(&args[0], env)?;
 
-func main() {
-	interp := interpreter.New() // Create new interpreter
-	interp.RegisterNative("log", func(
-        e []expr.Expression, 
-        env *value.Env,
-    ) (value.Value, error) {
-		if len(e) != 1 { // Check argument length
-			return value.NewUnit(), fmt.Errorf("Error in call to log: Expected one argument, got %d", len(e))
-		}
+        eprintln!("{log_string}");
+        Ok(Value::Unit)
+    })?;
 
-		// We expect a string as the argument, anything else is an error.
-		logString, err := eval.GetString(e[0], env)
-		if err != nil {
-			return value.NewUnit(), fmt.Errorf("Error in call to log: %s", err.Error())
-		}
-
-		log.Println(logString)
-		return value.NewUnit(), nil
-	})
-
-	interp.DoString("(log \"Gomad interpreter running!\")")
+    interp.do_string("(log \"Romad interpreter running!\")")?;
+    Ok(())
 }
 ```
 
-The key is to let the API user have access to the AST/S-Expressions, while giving comfortable functions such as `GetString` when lazy evaluation of callback arguments is not necessary.
+The key is to let the API user have access to the AST/S-Expressions, while giving comfortable functions such as `get_string` when lazy evaluation of callback arguments is not necessary.
 
 ### The type system
 Nomad's type system is relatively small. Its types are:
@@ -110,4 +100,4 @@ It's also important that, when a macro argument appears nested inside another li
 This was a small bug my first implementation had that I would like to warn you about.
 
 ## Any questions/did I forget something?
-If you have any questions or if I forgot something, feel free to let me know by sending me an email at `devMoritisimor@proton.me` or by posting an issue!
+If you have any questions or if I forgot something, feel free to let me know by sending me an email at `shawarma10@proton.me` or by posting an issue!

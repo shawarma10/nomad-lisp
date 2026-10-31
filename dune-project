@@ -5,15 +5,15 @@
 (generate_opam_files true)
 
 (source
- (github Moritisimor/nomad-lisp))
+ (github shawarma10/nomad-lisp))
 
-(authors "Moritisimor <devMoritisimor@proton.me>")
+(authors "shawarma10 <shawarma10@proton.me>")
 
-(maintainers "Moritisimor <devMoritisimor@proton.me>")
+(maintainers "shawarma10 <shawarma10@proton.me>")
 
 (license MIT)
 
-(documentation https://github.com/Moritisimor/nomad-lisp)
+(documentation https://github.com/shawarma10/nomad-lisp)
 
 (package
  (name nomad-lisp)
