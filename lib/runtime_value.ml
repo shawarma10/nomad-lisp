@@ -41,6 +41,17 @@ let rec string_of_rval = function
   | RRecord _ -> "<RECORD>"
   | RUnit -> "<UNIT>"
 
+let rec rval_equal a b =
+  match (a, b) with
+  | (RNum x, RNum y) -> x = y
+  | (RString x, RString y) -> x = y
+  | (RBool x, RBool y) -> x = y
+  | (RUnit, RUnit) -> true
+  | (RList x, RList y) -> List.equal rval_equal x y
+  | (RNativeFun _, RNativeFun _) | (RMacro _, RMacro _)
+  | (RLambda _, RLambda _) | (RRecord _, RRecord _) -> a == b
+  | _ -> false
+
 let new_env parent = {
   bindings = Hashtbl.create 0;
   parent = parent

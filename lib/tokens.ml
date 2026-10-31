@@ -25,8 +25,7 @@ let rec string_of_token = function
 let scan_numlit char_stream =
   let rec aux acc left =
     match left with
-    | [] -> Error (TokenizerError (sprintf "Number literal was never ended (Got %s)" (string_of_chars acc)))
-    | (')' | '(' | ' ' | '\t' | '\n') :: xs -> (
+    | [] | (')' | '(' | ' ' | '\t' | '\n' | '\r') :: _ -> (
         let num_string = string_of_chars acc in
         match float_of_string_opt num_string with
         | Some x -> Ok ((NUMLIT x), left)
@@ -46,6 +45,7 @@ let scan_stringlit char_stream =
     | '\\' :: 'r' :: xs -> aux ('\r' :: acc) xs
     | '\\' :: 'b' :: xs -> aux ('\b' :: acc) xs
     | '\\' :: '"' :: xs -> aux ('"' :: acc) xs
+    | '\\' :: '\\' :: xs -> aux ('\\' :: acc) xs
     | x :: xs -> aux (x :: acc) xs
   in aux [] char_stream
 
@@ -60,10 +60,12 @@ let skip_to_newline char_stream =
 let scan_symbol char_stream =
   let rec aux acc left =
     match left with
-    | [] -> Error (TokenizerError (sprintf "Symbol was never ended (Got %s)" (string_of_chars acc)))
-    | (')' | '(' | ' ' | '\t' | '\n') :: xs -> (
-        let symbol_string = string_of_chars acc in
-        Ok ((SYMBOL symbol_string), left)
+    | [] | (')' | '(' | ' ' | '\t' | '\n' | '\r') :: _ -> (
+        match string_of_chars acc with
+        | "true" -> Ok (BOOLLIT true, left)
+        | "false" -> Ok (BOOLLIT false, left)
+        | "unit" -> Ok (UNITLIT, left)
+        | symbol_string -> Ok (SYMBOL symbol_string, left)
     )
     
     | x :: xs -> aux (x :: acc) xs
@@ -88,14 +90,7 @@ let tokenize text =
     match left with
     | [] -> Ok (List.rev (EOF :: RPAREN :: acc))
     (* Whitespace *)
-    | ' ' :: xs | '\t' :: xs | '\n' :: xs -> aux acc xs
-
-    (* Bool literals *)
-    | 't' :: 'r' :: 'u' :: 'e' :: ('\n' | ')' | '\t' | '(' | ' ') :: xs -> aux (BOOLLIT true :: acc) xs
-    | 'f' :: 'a' :: 'l' :: 's' :: 'e':: ('\n' | ')' | '\t' | '(' | ' ') :: xs -> aux (BOOLLIT false :: acc) xs
-
-    (* Unit literals *)
-    | 'u' :: 'n' :: 'i' :: 't' :: ('\n' | ')' | '\t' | '(' | ' ') :: xs -> aux (UNITLIT :: acc) xs
+    | ' ' :: xs | '\t' :: xs | '\n' :: xs | '\r' :: xs -> aux acc xs
 
     (* Comments *)
     | '#' :: xs -> aux acc (skip_to_newline xs)

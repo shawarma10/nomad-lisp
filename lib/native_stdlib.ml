@@ -169,7 +169,7 @@ let native_funs = [
             Ok evaluated
           else
             let* evaluated_matcher = eval matcher env in
-            if evaluated_matcher = evaluated_scrutinee then 
+            if rval_equal evaluated_matcher evaluated_scrutinee then 
               let* evaluated = eval on_match env in
               Ok evaluated
             else
@@ -400,12 +400,7 @@ let native_funs = [
       let* x = eval a env in 
       let* y = eval b env in
 
-      match (x, y) with
-      | (RNum i, RNum j) -> Ok (RBool (i = j))
-      | (RString i, RString j) -> Ok (RBool (i = j))
-      | (RBool i, RBool j) -> Ok (RBool (i = j))
-      | (RList i, RList j) -> Ok (RBool (i = j))
-      | _ -> Ok (RBool false)
+      Ok (RBool (rval_equal x y))
     )
 
     | _ -> err "=" 2 (List.length params)
@@ -608,7 +603,9 @@ let native_funs = [
       let* evaluated_prompt = get_string e env in
       print_string evaluated_prompt;
       Out_channel.flush stdout;
-      Ok (RString (read_line ()))
+      match In_channel.input_line stdin with
+      | Some line -> Ok (RString line)
+      | None -> Error (EvaluationError "readln: reached end of input")
     )
 
     | _ -> err "readln" 1 (List.length params)
@@ -854,7 +851,7 @@ let native_funs = [
         Error (EvaluationError (sprintf "Couldn't write to '%s': %s" path e))
     )
 
-    | _ -> err "write_file" 1 (List.length params)
+    | _ -> err "write_file" 2 (List.length params)
   )));
 
   ("remove_file", (fun params env -> (
